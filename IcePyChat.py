@@ -38,11 +38,15 @@ def getMessage(jsonData):
         message = jsonData["data"]["data"]["c"]
         return timestamp, username, message
 
+def sendMessage(username, message):
+    ws.send('{"event":"chat","data":"{\"t\":\"ccm\",\"u\":\"CxTester\",\"c\":\"test2\"}"}')
 def checkPingPong(rawData):
     if rawData == '#1':
         ws.send('#2')
 
 logMode = False
+authMode = False
+authToken = ""
 
 if __name__ == "__main__":
     ws = runWS() #Initialize and check websocket
@@ -53,14 +57,14 @@ if __name__ == "__main__":
     while True: #Main loop
         dataRecv = ws.recv()
 
-        checkPingPong(dataRecv)
-        if dataRecv.startswith('{"event'): #Check if data is a message
+        try: #Checks if data passed is JSON
             jsonData = json.loads(dataRecv)
-            if jsonData["event"] == "#publish" and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
+            if "event" in jsonData and jsonData["event"] == "#publish" and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
                 timestamp, username, message = getMessage(jsonData)
                 finalMessage = '[' + timestamp + '] ' + username + ': ' + message
                 print(finalMessage)
-
                 if logMode == True: #Log if logmode enabled
                     logToFile(logFile, finalMessage)
+        except(ValueError):
+            checkPingPong(dataRecv)
         time.sleep(0.01) #Added to optimise performance
