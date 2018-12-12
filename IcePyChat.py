@@ -3,9 +3,6 @@
     Python Version: 3.6.3
 '''
 
-#Errors found:
-#TypeError: 'NoneType' object is not iterable
-
 import websocket
 import time
 import json
@@ -35,10 +32,7 @@ def logToFile(openedFile, message):
     openedFile.write(message + '\r\n')
     openedFile.flush()
 
-def getMessage(rawData):
-    jsonData = json.loads(rawData)
-
-    if jsonData["event"] == "#publish" and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
+def getMessage(jsonData):
         timestamp = str(datetime.datetime.now().time()).split(".")[0]
         username = jsonData["data"]["data"]["u"]
         message = jsonData["data"]["data"]["c"]
@@ -61,10 +55,12 @@ if __name__ == "__main__":
 
         checkPingPong(dataRecv)
         if dataRecv.startswith('{"event'): #Check if data is a message
-            timestamp, username, message = getMessage(dataRecv)
-            finalMessage = '[' + timestamp + '] ' + username + ': ' + message
-            print(finalMessage)
+            jsonData = json.loads(dataRecv)
+            if jsonData["event"] == "#publish" and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
+                timestamp, username, message = getMessage(jsonData)
+                finalMessage = '[' + timestamp + '] ' + username + ': ' + message
+                print(finalMessage)
 
-            if logMode == True: #Log if logmode enabled
-                logToFile(logFile, finalMessage)
+                if logMode == True: #Log if logmode enabled
+                    logToFile(logFile, finalMessage)
         time.sleep(0.01) #Added to optimise performance
