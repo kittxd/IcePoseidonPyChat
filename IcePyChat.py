@@ -3,6 +3,9 @@
     Python Version: 3.6.3
 '''
 
+#Todo:
+#Make a function to check that all data required for message reading is in the json container
+
 import websocket
 import time
 import json
@@ -67,7 +70,8 @@ if __name__ == "__main__":
 
         try: #Checks if data passed is JSON
             jsonData = json.loads(dataRecv)
-            if "event" in jsonData and jsonData["event"] == "#publish" and "data" in jsonData["data"] and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
+
+            if "event" in jsonData and jsonData["event"] == "#publish" and isinstance(jsonData["data"]["data"], dict) == True and "t" in jsonData["data"]["data"] and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
                 timestamp, username, message = getMessage(jsonData)
                 finalMessage = '[' + timestamp + '] ' + username + ': ' + message
                 print(finalMessage)
