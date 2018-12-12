@@ -39,10 +39,18 @@ def getMessage(jsonData):
         return timestamp, username, message
 
 def sendMessage(username, message):
-    ws.send('{"event":"chat","data":"{\"t\":\"ccm\",\"u\":\"CxTester\",\"c\":\"test2\"}"}')
+    ws.send('{"event":"chat","data":"{\"t\":\"ccm\",\"u\":\"' + username + '\",\"c\":\"' + message + '\"}"}')
+
 def checkPingPong(rawData):
     if rawData == '#1':
         ws.send('#2')
+
+def isJson(data):
+    try:
+        jsonData = json.loads(data)
+    except ValueError:
+        return False
+    return True
 
 logMode = False
 authMode = False
@@ -59,7 +67,7 @@ if __name__ == "__main__":
 
         try: #Checks if data passed is JSON
             jsonData = json.loads(dataRecv)
-            if "event" in jsonData and jsonData["event"] == "#publish" and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
+            if "event" in jsonData and jsonData["event"] == "#publish" and "t" in jsonData["data"]["data"] and jsonData["data"]["data"]["t"] == "ccm": #ccm used for chat
                 timestamp, username, message = getMessage(jsonData)
                 finalMessage = '[' + timestamp + '] ' + username + ': ' + message
                 print(finalMessage)
