@@ -1,3 +1,11 @@
+'''
+    Author: Kitt
+    Python Version: 3.6.3
+'''
+
+#Errors found:
+#TypeError: 'NoneType' object is not iterable
+
 import websocket
 import time
 import json
@@ -59,4 +67,4 @@ if __name__ == "__main__":
 
             if logMode == True: #Log if logmode enabled
                 logToFile(logFile, finalMessage)
-        time.sleep(0.01)
+        time.sleep(0.01) #Added to optimise performance
